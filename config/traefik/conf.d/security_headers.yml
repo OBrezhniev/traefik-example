@@ -1,0 +1,22 @@
+http:
+  middlewares:
+    secHeaders:
+      headers:
+        frameDeny: true
+        stsSeconds: 31536000
+        #stsPreload: true
+        stsIncludeSubdomains: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+
+    secHeadersDev:
+      headers:
+        frameDeny: true
+        stsSeconds: 600
+        #stsPreload: true
+        stsIncludeSubdomains: true
+        #forceSTSHeader: true
+        contentTypeNosniff: true
+        isDevelopment: true
+        customResponseHeaders:
+          X-Sec-Headers: "dev"

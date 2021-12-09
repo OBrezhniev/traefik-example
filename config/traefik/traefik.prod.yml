@@ -1,0 +1,49 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+entryPoints:
+  redirect:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: main
+          scheme: https
+  main:
+    address: :443
+    http:
+      middlewares:
+        - secHeaders@file
+      tls:
+        certResolver: maincr
+
+providers:
+  providersThrottleDuration: 2s
+  file:
+    directory: "/etc/traefik/conf.d"
+    watch: true
+  docker:
+    exposedByDefault: false
+    watch: true
+    endpoint: unix:///var/run/docker.sock
+    swarmMode: false
+    swarmModeRefreshSeconds: 15s
+    defaultRule: 'Host(`{{ index .Labels "router.hostname" }}.mydomain.com`){{ index .Labels "router.pathPrefix" | empty | ternary "" ( list " && PathPrefix(`/" (index .Labels "router.pathPrefix" | trimPrefix "/") "`)" | join "" )}}'
+
+api:
+  insecure: true
+
+log:
+  level: INFO
+
+accessLog:
+  format: clf
+
+certificatesResolvers:
+  maincr:
+    acme:
+      email: oleksandr.brezhniev@gmail.com
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: redirect

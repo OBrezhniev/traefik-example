@@ -1,0 +1,17 @@
+version: '3'
+
+networks:
+  mynetwork:
+
+services:
+  mydemo:
+    image: mydemo
+    expose:
+      - "80"
+    networks:
+      - mynetwork
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mydemo.loadbalancer.server.port=80"
+      - "router.hostname=mydemo"

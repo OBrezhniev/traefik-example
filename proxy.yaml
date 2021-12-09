@@ -1,0 +1,21 @@
+version: '3'
+
+networks:
+  mynetwork:
+
+services:
+
+  proxy:
+    image: traefik:v2.2
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Traefik Web UI (enabled by --api)
+    command: --configFile=/etc/traefik/traefik.yml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # So that Traefik can listen to the Docker events
+      - ./config/traefik/:/etc/traefik/
+      - ${TRAEFIK_ACME_PATH:-./config/traefik/letsencrypt}:/letsencrypt
+    networks:
+      - mynetwork
+    restart: always
